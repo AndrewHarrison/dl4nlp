@@ -22,4 +22,4 @@ cd $HOME/dl4nlp/
 # Activate your environment
 source activate DL4NLP
 # Run your code
-srun python -u experiments/multi-choice/run_multiple_choice.py --data_dir ../../data --model_type bert --model_name_or_path bert mutual --output_dir ../../experiment_outputs/bert
+srun python -u experiments/multi-choice/run_multiple_choice.py --data_dir ../../data --model_type bert --model_name_or_path bert mutual --output_dir ../../experiment_outputs/bert --do_lower_case --do_test

@@ -5,7 +5,7 @@
 #SBATCH --job-name=DLNLP_BERT
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=6
-#SBATCH --time=8:00:00
+#SBATCH --time=1:00:00
 #SBATCH --mem=48000M
 #SBATCH --output=slurm_output_%A.out
 
@@ -20,6 +20,6 @@ module load Anaconda3/2018.12
 # Your job starts in the directory where you call sbatch
 cd $HOME/dl4nlp/
 # Activate your environment
-source activate DL4NLP
+source activate dl4nlp
 # Run your code
 srun python -u experiments/multi-choice/run_multiple_choice.py --data_dir ../../data --model_type bert --model_name_or_path bert mutual --output_dir ../../experiment_outputs/bert --do_lower_case --do_test

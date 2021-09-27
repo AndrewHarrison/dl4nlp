@@ -1,26 +1,20 @@
 -----EVALUATION PARAMETERS-----
 Device: cuda
 Model: bart
-Max sequence length: 128
 Data directory: data/mutual
 Output directory: experiment_outputs/
 -----------------------------
 Loading model..
-Downloading:   0%|          | 0.00/1.56k [00:00<?, ?B/s]Downloading: 100%|##########| 1.56k/1.56k [00:00<00:00, 1.06MB/s]
 /home/lcur0003/.conda/envs/dl4nlp-nlg/lib/python3.6/site-packages/transformers/configuration_utils.py:337: UserWarning: Passing `gradient_checkpointing` to a config initialization is deprecated and will be removed in v5 Transformers. Using `model.gradient_checkpointing_enable()` instead, or if you are using the `Trainer` API, pass `gradient_checkpointing=True` in your `TrainingArguments`.
   "Passing `gradient_checkpointing` to a config initialization is deprecated and will be removed in v5 "
-Downloading:   0%|          | 0.00/26.0 [00:00<?, ?B/s]Downloading: 100%|##########| 26.0/26.0 [00:00<00:00, 17.9kB/s]
-Downloading:   0%|          | 0.00/878k [00:00<?, ?B/s]Downloading:   7%|6         | 60.0k/878k [00:00<00:02, 369kB/s]Downloading:  20%|#9        | 172k/878k [00:00<00:01, 554kB/s] Downloading:  62%|######1   | 540k/878k [00:00<00:00, 1.32MB/s]Downloading: 100%|##########| 878k/878k [00:00<00:00, 1.75MB/s]
-Downloading:   0%|          | 0.00/446k [00:00<?, ?B/s]Downloading:  15%|#5        | 68.0k/446k [00:00<00:00, 418kB/s]Downloading:  48%|####7     | 212k/446k [00:00<00:00, 686kB/s] Downloading: 100%|##########| 446k/446k [00:00<00:00, 1.08MB/s]
-Downloading:   0%|          | 0.00/1.29M [00:00<?, ?B/s]Downloading:   5%|4         | 60.0k/1.29M [00:00<00:03, 369kB/s]Downloading:   9%|9         | 124k/1.29M [00:00<00:02, 447kB/s] Downloading:  21%|##1       | 284k/1.29M [00:00<00:01, 811kB/s]Downloading:  60%|######    | 796k/1.29M [00:00<00:00, 2.08MB/s]Downloading: 100%|##########| 1.29M/1.29M [00:00<00:00, 2.29MB/s]
 Model loaded
 Loading data..
 Creating features from dataset file at data/mutual
-read files:   0%|          | 0/886 [00:00<?, ?it/s]read files:  27%|##6       | 239/886 [00:00<00:00, 2382.80it/s]read files:  54%|#####3    | 478/886 [00:00<00:00, 2354.95it/s]read files:  81%|########  | 714/886 [00:00<00:00, 2321.69it/s]read files: 100%|##########| 886/886 [00:00<00:00, 2318.64it/s]
+read files:   0%|          | 0/886 [00:00<?, ?it/s]read files:  25%|##5       | 222/886 [00:00<00:00, 2209.51it/s]read files:  50%|#####     | 443/886 [00:00<00:00, 2176.50it/s]read files:  75%|#######4  | 663/886 [00:00<00:00, 2183.66it/s]read files: 100%|#########9| 882/886 [00:00<00:00, 2167.25it/s]read files: 100%|##########| 886/886 [00:00<00:00, 2172.90it/s]
 Number of evaluation instances: 886
 Data loaded
 Starting evaluation..
-R4_1: 0.20316027088036118
-R4_2: 0.463882618510158
-MRR: 0.4903122648607961
+R4_1: 0.1930022573363431
+R4_2: 0.4469525959367946
+MRR: 0.48438675696011896
 Evaluation finished

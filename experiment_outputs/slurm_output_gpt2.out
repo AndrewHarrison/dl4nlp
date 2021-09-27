@@ -1,7 +1,6 @@
 -----EVALUATION PARAMETERS-----
 Device: cuda
 Model: gpt2
-Max sequence length: 128
 Data directory: data/mutual
 Output directory: experiment_outputs/
 -----------------------------
@@ -9,11 +8,11 @@ Loading model..
 Model loaded
 Loading data..
 Creating features from dataset file at data/mutual
-read files:   0%|          | 0/886 [00:00<?, ?it/s]read files:  27%|##7       | 240/886 [00:00<00:00, 2389.85it/s]read files:  54%|#####4    | 479/886 [00:00<00:00, 2281.69it/s]read files:  80%|#######9  | 708/886 [00:00<00:00, 2177.53it/s]read files: 100%|##########| 886/886 [00:00<00:00, 2173.09it/s]
+read files:   0%|          | 0/886 [00:00<?, ?it/s]read files:  28%|##8       | 251/886 [00:00<00:00, 2507.25it/s]read files:  57%|#####6    | 502/886 [00:00<00:00, 2378.53it/s]read files:  84%|########3 | 741/886 [00:00<00:00, 2354.14it/s]read files: 100%|##########| 886/886 [00:00<00:00, 2363.74it/s]
 Number of evaluation instances: 886
 Data loaded
 Starting evaluation..
-R4_1: 0.22234762979683972
-R4_2: 0.5011286681715575
-MRR: 0.5084650112866799
+R4_1: 0.2516930022573363
+R4_2: 0.5090293453724605
+MRR: 0.5258653122648587
 Evaluation finished

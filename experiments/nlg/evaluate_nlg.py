@@ -1,4 +1,4 @@
-# imports
+# Imports
 import os
 import argparse
 import math
@@ -8,7 +8,7 @@ import numpy as np
 from transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer
 from utils_nlg import processors
 
-# index for indices to answers
+# Index for indices to answers
 answer_index = {
     0: "A",
     1: "B",
@@ -16,7 +16,7 @@ answer_index = {
     3: "D",
 }
 
-# index for models to their pretrained directories
+# Index for models to their pretrained directories
 model_index = {
     'gpt2': 'gpt2',
     'bart': 'facebook/bart-large',
@@ -24,7 +24,6 @@ model_index = {
     'bigbird_pegasus': 'google/bigbird-pegasus-large-arxiv',
     'roberta': 'roberta-base',
     'xlprophetnet': 'microsoft/xprophetnet-large-wiki100-cased',
-    'rembert': 'rembert',
 }
 
 
@@ -111,6 +110,7 @@ def evaluate_model(args, device):
     model = AutoModelForCausalLM.from_config(config)
     model.to(device)
     tokenizer = AutoTokenizer.from_pretrained(model_index[args.model])
+    tokenizer.pad_token = "[PAD]"
     print('Model loaded')
 
     # Load the data
@@ -135,7 +135,8 @@ def evaluate_model(args, device):
                     example.context,
                     ending,
                     add_special_tokens=True,
-                    max_length=args.max_seq_length,
+                    #max_length=args.max_seq_length,
+                    padding=True,
                     truncation=True,
                     return_tensors="pt",
                 )
@@ -184,7 +185,7 @@ def main(args):
     print('-----EVALUATION PARAMETERS-----')
     print('Device: {}'.format(device))
     print('Model: {}'.format(args.model))
-    print('Max sequence length: {}'.format(args.max_seq_length))
+    #print('Max sequence length: {}'.format(args.max_seq_length))
     print('Data directory: {}'.format(args.data_dir))
     print('Output directory: {}'.format(args.output_dir))
     print('-----------------------------')
@@ -201,7 +202,7 @@ if __name__ == '__main__':
     # Hyperparameters
     parser.add_argument('--model', default='gpt2', type=str,
                         help='Generator model type to use. Default is gpt2.',
-                        choices=['gpt2', 'bart', 'gpt_neo', 'bigbird_pegasus', 'roberta', 'xlprophetnet', 'rembert'])
+                        choices=['gpt2', 'bart', 'gpt_neo', 'bigbird_pegasus', 'roberta', 'xlprophetnet'])
     parser.add_argument("--data_dir", default='data/mutual', type=str,
                         help="The input data dir. Should contain the .tsv files (or other data files) for the task. Default is data/mutual.")
     parser.add_argument("--output_dir", default='experiment_outputs/', type=str,

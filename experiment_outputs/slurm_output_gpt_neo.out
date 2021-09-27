@@ -1,0 +1,26 @@
+-----EVALUATION PARAMETERS-----
+Device: cuda
+Model: gpt_neo
+Max sequence length: 128
+Data directory: data/mutual
+Output directory: experiment_outputs/
+-----------------------------
+Loading model..
+Downloading:   0%|          | 0.00/1.32k [00:00<?, ?B/s]Downloading: 100%|##########| 1.32k/1.32k [00:00<00:00, 904kB/s]
+/home/lcur0003/.conda/envs/dl4nlp-nlg/lib/python3.6/site-packages/transformers/configuration_utils.py:337: UserWarning: Passing `gradient_checkpointing` to a config initialization is deprecated and will be removed in v5 Transformers. Using `model.gradient_checkpointing_enable()` instead, or if you are using the `Trainer` API, pass `gradient_checkpointing=True` in your `TrainingArguments`.
+  "Passing `gradient_checkpointing` to a config initialization is deprecated and will be removed in v5 "
+Downloading:   0%|          | 0.00/200 [00:00<?, ?B/s]Downloading: 100%|##########| 200/200 [00:00<00:00, 110kB/s]
+Downloading:   0%|          | 0.00/779k [00:00<?, ?B/s]Downloading:   4%|3         | 28.0k/779k [00:00<00:04, 172kB/s]Downloading:  16%|#5        | 124k/779k [00:00<00:01, 413kB/s] Downloading:  41%|####      | 316k/779k [00:00<00:00, 757kB/s]Downloading: 100%|##########| 779k/779k [00:00<00:00, 1.33MB/s]
+Downloading:   0%|          | 0.00/446k [00:00<?, ?B/s]Downloading:  14%|#4        | 64.0k/446k [00:00<00:00, 393kB/s]Downloading:  32%|###2      | 144k/446k [00:00<00:00, 449kB/s] Downloading: 100%|##########| 446k/446k [00:00<00:00, 1.07MB/s]
+Downloading:   0%|          | 0.00/90.0 [00:00<?, ?B/s]Downloading: 100%|##########| 90.0/90.0 [00:00<00:00, 64.6kB/s]
+Model loaded
+Loading data..
+Creating features from dataset file at data/mutual
+read files:   0%|          | 0/886 [00:00<?, ?it/s]read files:  28%|##7       | 245/886 [00:00<00:00, 2447.74it/s]read files:  55%|#####5    | 490/886 [00:00<00:00, 2336.00it/s]read files:  82%|########1 | 724/886 [00:00<00:00, 2281.16it/s]read files: 100%|##########| 886/886 [00:00<00:00, 2282.81it/s]
+Number of evaluation instances: 886
+Data loaded
+Starting evaluation..
+R4_1: 0.2516930022573363
+R4_2: 0.5146726862302482
+MRR: 0.5250188111361911
+Evaluation finished

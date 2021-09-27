@@ -6,8 +6,6 @@ import torch
 import pandas as pd
 import numpy as np
 from transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer
-from torch.utils.data import (DataLoader, SequentialSampler, TensorDataset)
-from tqdm import tqdm, trange
 from utils_nlg import processors
 
 # index for indices to answers
@@ -16,6 +14,14 @@ answer_index = {
     1: "B",
     2: "C",
     3: "D",
+}
+
+# index for models to their pretrained directories
+model_index = {
+    'gpt2': 'gpt2',
+    'bart': 'facebook/bart-large',
+    'gpt_neo': 'EleutherAI/gpt-neo-1.3B',
+    'bigbird_pegasus': 'google/bigbird-pegasus-large-arxiv',
 }
 
 
@@ -94,16 +100,14 @@ def evaluate_model(args, device):
     Inputs:
         args - Namespace object from the argument parser
         device - PyTorch device to place the model on
-    Outputs:
-        ?
     """
 
     # Load the model
     print('Loading model..')
-    config = AutoConfig.from_pretrained(args.model)
+    config = AutoConfig.from_pretrained(model_index[args.model])
     model = AutoModelForCausalLM.from_config(config)
     model.to(device)
-    tokenizer = AutoTokenizer.from_pretrained(args.model)
+    tokenizer = AutoTokenizer.from_pretrained(model_index[args.model])
     print('Model loaded')
 
     # Load the data
@@ -194,7 +198,7 @@ if __name__ == '__main__':
     # Hyperparameters
     parser.add_argument('--model', default='gpt2', type=str,
                         help='Generator model type to use. Default is gpt2.',
-                        choices=['gpt2'])
+                        choices=['gpt2', 'bart', 'gpt_neo', 'bigbird_pegasus'])
     parser.add_argument("--data_dir", default='data/mutual', type=str,
                         help="The input data dir. Should contain the .tsv files (or other data files) for the task. Default is data/mutual.")
     parser.add_argument("--output_dir", default='experiment_outputs/', type=str,

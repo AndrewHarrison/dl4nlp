@@ -22,6 +22,9 @@ model_index = {
     'bart': 'facebook/bart-large',
     'gpt_neo': 'EleutherAI/gpt-neo-1.3B',
     'bigbird_pegasus': 'google/bigbird-pegasus-large-arxiv',
+    'roberta': 'roberta-base',
+    'xlprophetnet': 'microsoft/xprophetnet-large-wiki100-cased',
+    'rembert': 'rembert',
 }
 
 
@@ -198,7 +201,7 @@ if __name__ == '__main__':
     # Hyperparameters
     parser.add_argument('--model', default='gpt2', type=str,
                         help='Generator model type to use. Default is gpt2.',
-                        choices=['gpt2', 'bart', 'gpt_neo', 'bigbird_pegasus'])
+                        choices=['gpt2', 'bart', 'gpt_neo', 'bigbird_pegasus', 'roberta', 'xlprophetnet', 'rembert'])
     parser.add_argument("--data_dir", default='data/mutual', type=str,
                         help="The input data dir. Should contain the .tsv files (or other data files) for the task. Default is data/mutual.")
     parser.add_argument("--output_dir", default='experiment_outputs/', type=str,

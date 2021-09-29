@@ -140,24 +140,27 @@ def evaluate_model(args, device):
                     truncation=True,
                     return_tensors="pt",
                 )
+                sentence_length = len(tokenizer.tokenize(example.context, ending))
                 inputs.to(device)
                 outputs = model(**inputs, labels=inputs['input_ids'])
                 loss = outputs.loss
                 # Calculate the perplexity
                 option_letter = answer_index[ending_index]
-                perplexity = calculate_perplexity(loss, inputs['input_ids'].size()[0])
+                perplexity = calculate_perplexity(loss, sentence_length)
                 scored_options.append((option_letter, perplexity))
             # Take the option with lowest perplexity
             predictions = sorted(scored_options, key=lambda x: x[1])
+            print(predictions)
             predictions, _ = map(list, zip(*predictions))
             predicted = predictions[0]
+            print(predicted)
             example_ids.append(example.example_id)
             predicted_labels.append(predicted)
             real_labels.append(example.label)
             full_predictions.append(predictions)
 
     # Save the results in a .csv file
-    df = pd.DataFrame(list(zip(example_ids, predicted_labels, real_labels)), columns=['example_id', 'predicted_label', 'real_label'])
+    df = pd.DataFrame(list(zip(example_ids, predicted_labels, real_labels, full_predictions)), columns=['example_id', 'predicted_label', 'real_label', 'full_ordering'])
     df['correct'] = np.where(df['predicted_label'] == df['real_label'], True, False)
     df.to_csv(args.output_dir + args.model + '_results.csv')
 

@@ -65,9 +65,9 @@ usage: evaluate_nlg.py [-h] [--model MODEL] [--data_dir DATA_dir] [--output_dir 
 
 optional arguments:
   -h, --help            			Show help message and exit.
-  --model MODEL			What model to use. Options: ['gpt2', 'bart', 'gpt_neo', 'dialog_gpt', 'xlnet', 'xlprophetnet']. Default is 'gpt2'.
-  --data_dir DATA_DIR				Directory where the data is stored. Default is 'data/mutual'.
-  --output_dir OUTPUT_DIR				DIrectory where the evaluation results are stored as csv files. Default is 'experiment_outputs/'.
+  --model MODEL			          What model to use. Options: ['gpt2', 'bart', 'gpt_neo', 'dialog_gpt', 'xlnet', 'xlprophetnet']. Default is 'gpt2'.
+  --data_dir DATA_DIR				  Directory where the data is stored. Default is 'data/mutual'.
+  --output_dir OUTPUT_DIR			Directory where the evaluation results are stored as csv files. Default is 'experiment_outputs/'.
 ```
 
 ## Authors

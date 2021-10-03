@@ -21,8 +21,8 @@ model_index = {
     'gpt2': 'gpt2',
     'bart': 'facebook/bart-large',
     'gpt_neo': 'EleutherAI/gpt-neo-1.3B',
-    'bigbird_pegasus': 'google/bigbird-pegasus-large-arxiv',
-    'roberta': 'roberta-base',
+    'dialog_gpt': 'microsoft/DialoGPT-large',
+    'xlnet': 'xlnet-base-cased',
     'xlprophetnet': 'microsoft/xprophetnet-large-wiki100-cased',
 }
 
@@ -125,11 +125,11 @@ def evaluate_model(args, device):
     real_labels = []
     full_predictions = []
     for example in eval_dataset:
-        model.eval()
-        with torch.no_grad():
-            scored_options = []
-            # Create all possible options
-            for ending_index, ending in enumerate(example.endings):
+        scored_options = []
+        # Create all possible options
+        for ending_index, ending in enumerate(example.endings):
+            model.eval()
+            with torch.no_grad():
                 # Pass through the model
                 inputs = tokenizer.encode_plus(
                     example.context,
@@ -141,6 +141,7 @@ def evaluate_model(args, device):
                     return_tensors="pt",
                 )
                 sentence_length = len(tokenizer.tokenize(example.context, ending))
+                #sentence_length = len(tokenizer.tokenize(ending))
                 inputs.to(device)
                 outputs = model(**inputs, labels=inputs['input_ids'])
                 loss = outputs.loss
@@ -148,16 +149,16 @@ def evaluate_model(args, device):
                 option_letter = answer_index[ending_index]
                 perplexity = calculate_perplexity(loss, sentence_length)
                 scored_options.append((option_letter, perplexity))
-            # Take the option with lowest perplexity
-            predictions = sorted(scored_options, key=lambda x: x[1])
-            print(predictions)
-            predictions, _ = map(list, zip(*predictions))
-            predicted = predictions[0]
-            print(predicted)
-            example_ids.append(example.example_id)
-            predicted_labels.append(predicted)
-            real_labels.append(example.label)
-            full_predictions.append(predictions)
+        # Take the option with lowest perplexity
+        predictions = sorted(scored_options, key=lambda x: x[1])
+        print(predictions)
+        predictions, _ = map(list, zip(*predictions))
+        predicted = predictions[0]
+        print(predicted)
+        example_ids.append(example.example_id)
+        predicted_labels.append(predicted)
+        real_labels.append(example.label)
+        full_predictions.append(predictions)
 
     # Save the results in a .csv file
     df = pd.DataFrame(list(zip(example_ids, predicted_labels, real_labels, full_predictions)), columns=['example_id', 'predicted_label', 'real_label', 'full_ordering'])
@@ -188,7 +189,6 @@ def main(args):
     print('-----EVALUATION PARAMETERS-----')
     print('Device: {}'.format(device))
     print('Model: {}'.format(args.model))
-    #print('Max sequence length: {}'.format(args.max_seq_length))
     print('Data directory: {}'.format(args.data_dir))
     print('Output directory: {}'.format(args.output_dir))
     print('-----------------------------')
@@ -205,14 +205,11 @@ if __name__ == '__main__':
     # Hyperparameters
     parser.add_argument('--model', default='gpt2', type=str,
                         help='Generator model type to use. Default is gpt2.',
-                        choices=['gpt2', 'bart', 'gpt_neo', 'bigbird_pegasus', 'roberta', 'xlprophetnet'])
+                        choices=['gpt2', 'bart', 'gpt_neo', 'dialog_gpt', 'xlnet', 'xlprophetnet'])
     parser.add_argument("--data_dir", default='data/mutual', type=str,
                         help="The input data dir. Should contain the .tsv files (or other data files) for the task. Default is data/mutual.")
     parser.add_argument("--output_dir", default='experiment_outputs/', type=str,
                         help="The output directory for the .csv files. Default is experiment_outputs/.")
-    parser.add_argument("--max_seq_length", default=128, type=int,
-                        help="The maximum total input sequence length after tokenization. Sequences longer "
-                             "than this will be truncated, sequences shorter will be padded. Default is 128.")
 
     # Parse the arguments
     args = parser.parse_args()

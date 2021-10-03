@@ -31,7 +31,13 @@ git clone https://github.com/AndrewHarrison/dl4nlp.git
 2. Create the environment:
 
 ```bash
-conda env create -f environment.yml
+conda env create -f environments/environment.yml
+```
+
+Or use the Lisa environment when running on the SurfSara Lisa cluster:
+
+```bash
+conda env create -f environments/environment_lisa.yml
 ```
 
 3. Activate the environment:

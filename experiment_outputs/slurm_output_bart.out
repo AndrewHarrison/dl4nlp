@@ -1,20 +1,0 @@
------EVALUATION PARAMETERS-----
-Device: cuda
-Model: bart
-Data directory: data/mutual
-Output directory: experiment_outputs/
------------------------------
-Loading model..
-/home/lcur0003/.conda/envs/dl4nlp-nlg/lib/python3.6/site-packages/transformers/configuration_utils.py:337: UserWarning: Passing `gradient_checkpointing` to a config initialization is deprecated and will be removed in v5 Transformers. Using `model.gradient_checkpointing_enable()` instead, or if you are using the `Trainer` API, pass `gradient_checkpointing=True` in your `TrainingArguments`.
-  "Passing `gradient_checkpointing` to a config initialization is deprecated and will be removed in v5 "
-Model loaded
-Loading data..
-Creating features from dataset file at data/mutual
-read files:   0%|          | 0/886 [00:00<?, ?it/s]read files:  25%|##5       | 222/886 [00:00<00:00, 2209.51it/s]read files:  50%|#####     | 443/886 [00:00<00:00, 2176.50it/s]read files:  75%|#######4  | 663/886 [00:00<00:00, 2183.66it/s]read files: 100%|#########9| 882/886 [00:00<00:00, 2167.25it/s]read files: 100%|##########| 886/886 [00:00<00:00, 2172.90it/s]
-Number of evaluation instances: 886
-Data loaded
-Starting evaluation..
-R4_1: 0.1930022573363431
-R4_2: 0.4469525959367946
-MRR: 0.48438675696011896
-Evaluation finished

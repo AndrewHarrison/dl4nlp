@@ -47,7 +47,7 @@ def load_examples(args):
     return examples
 
 
-def calculate_perplexity(loss, sentence_length):
+def calculate_perplexity(score, sentence_length):
     """
     Function for calculating the perplexity of an option.
     Inputs:
@@ -58,18 +58,17 @@ def calculate_perplexity(loss, sentence_length):
     """
 
     # Calculate the perplexity
-    perplexity = math.exp(loss / sentence_length)
+    perplexity = math.exp(torch.mean(score).cpu().detach() / sentence_length)
 
     # Return the perplexity
     return perplexity
 
 
-def calculate_eval_metrics(full_predictions, predicted_labels, real_labels):
+def calculate_eval_metrics(full_predictions, real_labels):
     """
     Function for calculating the evaluation metrics.
     Inputs:
         full_predictions - List of ordered lists containing the predictions
-        predicted_labels - List of the model label predictions
         real_labels - List of real labels
     Outputs:
         R4_1 - Recall at 1
@@ -110,7 +109,6 @@ def evaluate_model(args, device):
     model = AutoModelForCausalLM.from_config(config)
     model.to(device)
     tokenizer = AutoTokenizer.from_pretrained(model_index[args.model])
-    tokenizer.pad_token = "[PAD]"
     print('Model loaded')
 
     # Load the data
@@ -135,19 +133,19 @@ def evaluate_model(args, device):
                     example.context,
                     ending,
                     add_special_tokens=True,
-                    #max_length=args.max_seq_length,
-                    padding=True,
                     truncation=True,
                     return_tensors="pt",
                 )
-                sentence_length = len(tokenizer.tokenize(example.context, ending))
+                #sentence_length = len(tokenizer.tokenize(example.context, ending))
                 #sentence_length = len(tokenizer.tokenize(ending))
                 inputs.to(device)
                 outputs = model(**inputs, labels=inputs['input_ids'])
-                loss = outputs.loss
+                #print(outputs.logits)
+                perplexity = outputs.loss
+                #score = outputs.logits
                 # Calculate the perplexity
                 option_letter = answer_index[ending_index]
-                perplexity = calculate_perplexity(loss, sentence_length)
+                #perplexity = calculate_perplexity(score, sentence_length)
                 scored_options.append((option_letter, perplexity))
         # Take the option with lowest perplexity
         predictions = sorted(scored_options, key=lambda x: x[1])
@@ -166,7 +164,7 @@ def evaluate_model(args, device):
     df.to_csv(args.output_dir + args.model + '_results.csv')
 
     # Calculate the evaluation metrics
-    R4_1, R4_2, mrr = calculate_eval_metrics(full_predictions, predicted_labels, real_labels)
+    R4_1, R4_2, mrr = calculate_eval_metrics(full_predictions, real_labels)
 
     # Print the evaluation metrics
     print('R4_1: {}'.format(R4_1))

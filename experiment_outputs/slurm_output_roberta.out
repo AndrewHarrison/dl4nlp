@@ -1,19 +1,0 @@
------EVALUATION PARAMETERS-----
-Device: cuda
-Model: roberta
-Data directory: data/mutual
-Output directory: experiment_outputs/
------------------------------
-Loading model..
-If you want to use `RobertaLMHeadModel` as a standalone, add `is_decoder=True.`
-Model loaded
-Loading data..
-Creating features from dataset file at data/mutual
-read files:   0%|          | 0/886 [00:00<?, ?it/s]read files:  28%|##8       | 252/886 [00:00<00:00, 2511.73it/s]read files:  57%|#####6    | 504/886 [00:00<00:00, 2403.23it/s]read files:  84%|########4 | 745/886 [00:00<00:00, 2392.93it/s]read files: 100%|##########| 886/886 [00:00<00:00, 2377.72it/s]
-Number of evaluation instances: 886
-Data loaded
-Starting evaluation..
-R4_1: 0.21218961625282168
-R4_2: 0.4853273137697517
-MRR: 0.5005643340857773
-Evaluation finished

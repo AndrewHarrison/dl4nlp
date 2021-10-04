@@ -1,18 +1,0 @@
------EVALUATION PARAMETERS-----
-Device: cuda
-Model: xlprophetnet
-Data directory: data/mutual
-Output directory: experiment_outputs/
------------------------------
-Loading model..
-Model loaded
-Loading data..
-Creating features from dataset file at data/mutual
-read files:   0%|          | 0/886 [00:00<?, ?it/s]read files:  25%|##5       | 224/886 [00:00<00:00, 2238.55it/s]read files:  51%|#####     | 450/886 [00:00<00:00, 2246.21it/s]read files:  76%|#######6  | 675/886 [00:00<00:00, 2133.44it/s]read files: 100%|##########| 886/886 [00:00<00:00, 2117.60it/s]
-Number of evaluation instances: 886
-Data loaded
-Starting evaluation..
-R4_1: 0.26749435665914223
-R4_2: 0.5462753950338601
-MRR: 0.540255831452218
-Evaluation finished

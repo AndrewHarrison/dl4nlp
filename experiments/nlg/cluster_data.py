@@ -11,14 +11,14 @@ from evaluate_nlg import answer_index, model_index, load_examples
 
 
 class InputConcat(InputExample):
-    """Contains the concatenation of the context and its correct answer, the length of the result and the label of the datapoint"""    
+    """Contains the concatenation of the context and its correct answer, the length of the result and the cluster inex of the datapoint"""    
 
-    def __init__(self, input_obj, context_concat, length = 0, label = 0):
+    def __init__(self, input_obj, context_concat, length = 0, cluster = 0):
 
         InputExample.__init__(self, input_obj.example_id, input_obj.context, input_obj.endings, input_obj.label)
         self.context_concat = context_concat
         self.length = length
-        self.label = label
+        self.cluster = cluster
 
 def concat_data(eval_dataset):
     """This method concatenates the data: each dialogue with its correct continuation
@@ -55,8 +55,8 @@ def plot_histogram(input, xlabel):
     plt.gca().set(title='Frequency Histogram', xlabel=xlabel, ylabel='Frequency')
     plt.show()
 
-def assign_length_labels(eval_dataset_concat, length):
-    """This method assigns a label to each datapoint given its length and the data distribution
+def assign_length_clusters(eval_dataset_concat, length):
+    """This method assigns a cluster to each datapoint given its length and the data distribution
 
     Args:
         eval_dataset_concat (list): Concatenated evaluation dataset
@@ -66,7 +66,7 @@ def assign_length_labels(eval_dataset_concat, length):
     q_1, q_2, q_3 = np.quantile(length, 0.25), np.quantile(length, 0.50), np.quantile(length, 0.75)
 
     for example in eval_dataset_concat:
-        example.label = 0 if example.length <= q_1 else 1 if example.length <= q_2 else 2 if example.length <= q_3 else 3
+        example.cluster = 0 if example.length <= q_1 else 1 if example.length <= q_2 else 2 if example.length <= q_3 else 3
     
 def get_length(eval_dataset_concat):
     """Calculate the length of each datapoint
@@ -81,7 +81,7 @@ def get_length(eval_dataset_concat):
         example.length = len(example.context_concat)   
         length.append(example.length)
     
-    assign_length_labels(eval_dataset_concat, length)
+    assign_length_clusters(eval_dataset_concat, length)
     plot_histogram(length, xlabel='Length of Dialogue in characters')
 
 def get_token_length(eval_dataset_concat):
@@ -111,7 +111,7 @@ def get_token_length(eval_dataset_concat):
         example.length = mean_length_tokenizers[j] 
         j += 1
         
-    assign_length_labels(eval_dataset_concat, mean_length_tokenizers)
+    assign_length_clusters(eval_dataset_concat, mean_length_tokenizers)
     plot_histogram(mean_length_tokenizers, xlabel='Length of Tokenized Dialogue')
     
 def get_tfidf(eval_dataset_concat):
@@ -128,7 +128,7 @@ def get_tfidf(eval_dataset_concat):
     clusters = KMeans(n_clusters=4, n_init=128).fit_predict(X)
     
     for i, example in enumerate(eval_dataset_concat):
-        example.label = clusters[i]
+        example.cluster = clusters[i]
     
     # Plot clusters:
     pca = PCA(n_components=2)
@@ -188,7 +188,7 @@ if __name__ == '__main__':
     # Hyperparameters
     parser.add_argument("--data_dir", default='data/mutual', type=str,
                         help="The input data dir. Should contain the .tsv files (or other data files) for the task. Default is data/mutual.")
-    parser.add_argument("--partition", default='length', type=str,
+    parser.add_argument("--partition", default='tf-idf', type=str,
                         help="Types of data partition. Can be one of the following: [length, token_length, tf-idf]/.")
 
     # Parse the arguments

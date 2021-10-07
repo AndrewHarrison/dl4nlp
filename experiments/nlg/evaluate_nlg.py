@@ -5,6 +5,8 @@ import math
 import torch
 import pandas as pd
 import numpy as np
+import random
+from pathlib import Path
 from transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer, AdamW
 from utils_nlg import processors
 
@@ -37,26 +39,24 @@ model_index = {
 
 # Index for learning methods
 learning_method_index = {
-    'zero_shot': 0,
-    '1_shot': 1,
-    '10_shot': 10,
-    '100_shot': 100,
-    '1000_shot': 1000,
-    'full_dataset': -1,
+    'zero_shot': (0, 0),
+    '1_shot': (1, 1),
+    '10_shot': (10, 1),
+    '1_epoch': (-1, 1),
+    '5_epoch': (-1, 5),
+    '10_epoch': (-1, 10),
 }
 
 
-def load_examples(args):
+def load_examples(args, learning_method):
     """
     Function for loading the examples.
     Inputs:
         args - Namespace object from the argument parser
+        learning_method - Int indicating the cut-off for the dataset
     Outputs:
         examples - List of development set examples
     """
-
-    # Get the learning method
-    learning_method = learning_method_index[args.learning_method]
 
     # Load data features
     print("Creating features from dataset file at {}".format(args.data_dir))
@@ -160,40 +160,43 @@ def evaluate_model(args, device):
     print('Loading model..')
     config = AutoConfig.from_pretrained(model_index[args.model])
     model = AutoModelForCausalLM.from_config(config)
-    # Freeze the model except the last layer
-    for param in model.transformer.parameters():
-        param.requires_grad = False
-    print(model)
     model.to(device)
     tokenizer = AutoTokenizer.from_pretrained(model_index[args.model])
     tokenizer.pad_token = tokenizer.eos_token
     print('Model loaded')
 
+    # Get the learning method
+    learning_method, num_epochs = learning_method_index[args.learning_method]
+
     # Load the data
     print('Loading data..')
-    train_dataset, eval_dataset = load_examples(args)
+    train_dataset, eval_dataset = load_examples(args, learning_method)
     print('Data loaded')
 
     # Train the model
-    if len(train_dataset) == 0:
+    if num_epochs == 0:
         print('Skipping training')
     else:
         print('Starting training..')
         model.train()
-        optimizer = AdamW(model.parameters())
-        # Batch the dataset
-        batches = batch_dataset(tokenizer, train_dataset, args.batch_size)
-        for batch in batches:
-            model.zero_grad()
+        optimizer = AdamW(model.lm_head.parameters())
+        for epoch in range(num_epochs):
+            # Shuffle the dataset
+            random.shuffle(train_dataset) 
 
-            # Pass through the model
-            batch.to(device)
-            outputs = model(**batch, labels=batch['input_ids'])
-            loss = outputs.loss
+            # Batch the dataset
+            batches = batch_dataset(tokenizer, train_dataset, args.batch_size)
+            for batch in batches:
+                model.zero_grad()
 
-            # Optimize
-            loss.backward()
-            optimizer.step()
+                # Pass through the model
+                batch.to(device)
+                outputs = model(**batch, labels=batch['input_ids'])
+                loss = outputs.loss
+
+                # Optimize
+                loss.backward()
+                optimizer.step()
         print('Training finished')
 
     # Evaluate the model
@@ -230,6 +233,9 @@ def evaluate_model(args, device):
         real_labels.append(example.label)
         full_predictions.append(predictions)
 
+    # Create the directory if it doesn't exist already
+    Path(args.output_dir + args.model).mkdir(parents=True, exist_ok=True)
+    
     # Save the results in a .csv file
     df = pd.DataFrame(list(zip(example_ids, predicted_labels, real_labels, full_predictions)), columns=['example_id', 'predicted_label', 'real_label', 'full_ordering'])
     df['correct'] = np.where(df['predicted_label'] == df['real_label'], True, False)
@@ -292,7 +298,7 @@ if __name__ == '__main__':
                         help="The output directory for the .csv files. Default is experiment_outputs/.")
     parser.add_argument('--learning_method', default='zero_shot', type=str,
                         help='Learning method to use. Default is zero_shot.',
-                        choices=['zero_shot', '1_shot', '10_shot', '100_shot', '1000_shot', 'full_dataset'])
+                        choices=['zero_shot', '1_shot', '10_shot', '1_epoch', '5_epoch', '10_epoch'])
 
     # Parse the arguments
     args = parser.parse_args()

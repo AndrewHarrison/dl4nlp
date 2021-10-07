@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig
 from utils_nlg import InputExample
-from evaluate_nlg import answer_index, model_index, load_examples
+from evaluate_nlg import answer_index, model_index, load_examples, calculate_eval_metrics
 
 
 class InputConcat(InputExample):
@@ -161,6 +161,86 @@ def data_partition(args,  eval_dataset):
         get_tfidf(eval_dataset_concat)
     elif args.partition == 'token_length':
         get_token_length(eval_dataset_concat)
+        
+    return eval_dataset_concat
+
+def eval_model(args, eval_dataset, model, tokenizer):
+    """This method is used for evaluating the model
+
+    Args:
+        args (Namespace): Object from the argument parser
+        eval_dataset (list): Current dataset used for evaluation
+        model (transformer): Current model
+        tokenizer (transformer): The tokenizer wrt the current model
+    """    
+    
+    # Evaluate the model
+    print('Starting evaluation..')
+    example_ids = []
+    predicted_labels = []
+    real_labels = []
+    full_predictions = []
+    for example in eval_dataset:
+        scored_options = []
+        # Create all possible options
+        for ending_index, ending in enumerate(example.endings):
+            model.eval()
+            with torch.no_grad():
+                # Pass through the model
+                inputs = tokenizer.encode_plus(
+                    example.context,
+                    ending,
+                    add_special_tokens=True,
+                    truncation=True,
+                    return_tensors="pt",
+                )
+                outputs = model(**inputs, labels=inputs['input_ids'])
+                perplexity = outputs.loss
+                # Calculate the perplexity
+                option_letter = answer_index[ending_index]
+                scored_options.append((option_letter, perplexity))
+        # Take the option with lowest perplexity
+        predictions = sorted(scored_options, key=lambda x: x[1])
+        print(predictions)
+        predictions, _ = map(list, zip(*predictions))
+        predicted = predictions[0]
+        print(predicted)
+        example_ids.append(example.example_id)
+        predicted_labels.append(predicted)
+        real_labels.append(example.label)
+        full_predictions.append(predictions)
+            
+    # Calculate the evaluation metrics
+    R4_1, R4_2, mrr = calculate_eval_metrics(full_predictions, real_labels)
+
+    # Print the evaluation metrics
+    print('R4_1: {}'.format(R4_1))
+    print('R4_2: {}'.format(R4_2))
+    print('MRR: {}'.format(mrr))
+    print('Evaluation finished', '\n')
+    
+def eval_data_partitions(args, eval_dataset_concat):
+    """This method divides the data into partitions according to their assigned cluster label and runs evaluation on each
+
+    Args:
+        args (Namespace): Object from the argument parser
+        eval_dataset_concat (list): Concatenated evaluation dataset
+    """    
+    
+    cluster_values = set(map(lambda x:x.cluster, eval_dataset_concat))
+    # print(cluster_values)
+    partitioned_dataset = [[example for example in eval_dataset_concat if example.cluster==x] for x in cluster_values]
+
+    print('Loading model..')
+    config = AutoConfig.from_pretrained(model_index[args.model])
+    model = AutoModelForCausalLM.from_config(config)
+    tokenizer = AutoTokenizer.from_pretrained(model_index[args.model])
+    print('Model loaded')
+
+    for cluster in cluster_values:
+        print('Cluster ', cluster)
+        eval_model(args, partitioned_dataset[cluster], model, tokenizer)
+        
 
 def main(args):
     """Handles the arguments and starts data partitioning
@@ -176,10 +256,12 @@ def main(args):
     print('-----------------------------')
 
     # Load data and start data partitioning
-    eval_dataset = load_examples(args)
-    data_partition(args, eval_dataset)
+    train_dataset, eval_dataset = load_examples(args)
+    eval_dataset_concat = data_partition(args, eval_dataset)
+        
+    eval_data_partitions(args, eval_dataset_concat)
 
-
+        
 # Command line arguments parsing
 if __name__ == '__main__':
 
@@ -188,9 +270,14 @@ if __name__ == '__main__':
     # Hyperparameters
     parser.add_argument("--data_dir", default='data/mutual', type=str,
                         help="The input data dir. Should contain the .tsv files (or other data files) for the task. Default is data/mutual.")
-    parser.add_argument("--partition", default='tf-idf', type=str,
+    parser.add_argument("--partition", default='length', type=str,
                         help="Types of data partition. Can be one of the following: [length, token_length, tf-idf]/.")
-
+    parser.add_argument('--model', default='gpt2', type=str,
+                        help='Generator model type to use. Default is gpt2.',
+                        choices=['gpt2', 'bart', 'gpt_neo', 'dialog_gpt', 'xlnet', 'xlprophetnet'])
+    parser.add_argument('--learning_method', default='zero_shot', type=str,
+                        help='Learning method to use. Default is zero_shot.',
+                        choices=['zero_shot', '1_shot', '10_shot', '100_shot', '1000_shot', 'full_dataset'])
     # Parse the arguments
     args = parser.parse_args()
 

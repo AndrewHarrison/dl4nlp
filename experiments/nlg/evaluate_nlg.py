@@ -167,6 +167,7 @@ def evaluate_model(args, device):
 
     # Get the learning method
     learning_method, num_epochs = learning_method_index[args.learning_method]
+    print('Number of training epochs: {}'.format(num_epochs))
 
     # Load the data
     print('Loading data..')

@@ -165,6 +165,12 @@ def evaluate_model(args, device):
     tokenizer.pad_token = tokenizer.eos_token
     print('Model loaded')
 
+    # Check which parameters to use for the optimizer
+    if args.model == 'xlnet':
+        optimizer_parameters = model.lm_loss.parameters()
+    else:
+        optimizer_parameters = model.lm_head.parameters()
+
     # Get the learning method
     learning_method, num_epochs = learning_method_index[args.learning_method]
     print('Number of training epochs: {}'.format(num_epochs))
@@ -180,7 +186,7 @@ def evaluate_model(args, device):
     else:
         print('Starting training..')
         model.train()
-        optimizer = AdamW(model.lm_head.parameters())
+        optimizer = AdamW(optimizer_parameters)
         for epoch in range(num_epochs):
             # Shuffle the dataset
             random.shuffle(train_dataset) 

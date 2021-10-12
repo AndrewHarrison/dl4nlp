@@ -73,9 +73,9 @@ usage: evaluate_nlg.py [-h] [--model MODEL] [--batch_size BATCH_SIZE] [--data_di
 optional arguments:
   -h, --help            			Show help message and exit.
   --model MODEL            			What model to use. Options: ['gpt2', 'bart', 'gpt_neo', 'dialog_gpt', 'xlnet', 'blenderbot']. Default is 'gpt2'.
-  --batch_size BATCH_SIZE            	Batch size to use during training. Default is 8.
-  --data_dir DATA_DIR            	Directory where the data is stored. Default is 'data/mutual'.
-  --output_dir OUTPUT_DIR            	Directory where the evaluation results are stored as csv files. Default is 'experiment_outputs/'.
+  --batch_size BATCH_SIZE            	 Batch size to use during training. Default is 8.
+  --data_dir DATA_DIR            	 Directory where the data is stored. Default is 'data/mutual'.
+  --output_dir OUTPUT_DIR            	 Directory where the evaluation results are stored as csv files. Default is 'experiment_outputs/'.
   --learning_method LEARNING_METHOD            	Learning method to use. Options: ['zero_shot', '1_shot', '10_shot', '1_epoch', '5_epoch', '10_epoch']. Default is 'zero_shot'.
 ```
 

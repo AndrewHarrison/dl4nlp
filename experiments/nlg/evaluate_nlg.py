@@ -33,7 +33,6 @@ model_index = {
     'gpt_neo': 'EleutherAI/gpt-neo-1.3B',
     'dialog_gpt': 'microsoft/DialoGPT-large',
     'xlnet': 'xlnet-base-cased',
-    'xlprophetnet': 'microsoft/xprophetnet-large-wiki100-cased',
     'blenderbot': 'facebook/blenderbot-3B',
 }
 
@@ -296,7 +295,7 @@ if __name__ == '__main__':
     # Hyperparameters
     parser.add_argument('--model', default='gpt2', type=str,
                         help='Generator model type to use. Default is gpt2.',
-                        choices=['gpt2', 'bart', 'gpt_neo', 'dialog_gpt', 'xlnet', 'xlprophetnet', 'blenderbot'])
+                        choices=['gpt2', 'bart', 'gpt_neo', 'dialog_gpt', 'xlnet', 'blenderbot'])
     parser.add_argument('--batch_size', default=8, type=int,
                         help='Batch size to use during training. Default is 8.')
     parser.add_argument("--data_dir", default='data/mutual', type=str,
